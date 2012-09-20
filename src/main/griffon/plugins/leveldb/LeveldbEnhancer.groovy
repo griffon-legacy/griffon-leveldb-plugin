@@ -27,7 +27,7 @@ final class LeveldbEnhancer {
     private static final Logger LOG = LoggerFactory.getLogger(LeveldbEnhancer)
 
     private LeveldbEnhancer() {}
-    
+
     static void enhance(MetaClass mc, LeveldbProvider provider = LeveldbDatabaseHolder.instance) {
         if(LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
         mc.withLeveldb = {Closure closure ->

@@ -19,9 +19,9 @@
  */
 class LeveldbGriffonPlugin {
     // the plugin version
-    String version = '0.1'
+    String version = '0.2'
     // the version or versions of Griffon the plugin is designed for
-    String griffonVersion = '0.9.5 > *'
+    String griffonVersion = '1.1.0 > *'
     // the other plugins this plugin depends on
     Map dependsOn = [:]
     // resources that are included in plugin packaging
@@ -63,6 +63,7 @@ giving you access to a `org.iq80.leveldb.DB` object, with which you'll be able
 to make calls to the database. Remember to make all database calls off the EDT
 otherwise your application may appear unresponsive when doing long computations
 inside the EDT.
+
 This method is aware of multiple databases. If no databaseName is specified when calling
 it then the default database will be selected. Here are two example usages, the first
 queries against the default database while the second queries a database whose name has
@@ -136,9 +137,9 @@ fails regardless of the arguments it receives
 
     class MyLeveldbProvider implements LeveldbProvider {
         Object withLeveldb(String databaseName = 'default', Closure closure) { null }
-        public <T> T withLeveldb(String databaseName = 'default', CallableWithArgs<T> callable) { null }      
+        public <T> T withLeveldb(String databaseName = 'default', CallableWithArgs<T> callable) { null }
     }
-    
+
 This implementation may be used in the following way
 
     class MyServiceTests extends GriffonUnitTestCase {

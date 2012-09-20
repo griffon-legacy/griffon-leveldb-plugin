@@ -34,7 +34,7 @@ class LeveldbDatabaseHolder implements LeveldbProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LeveldbDatabaseHolder)
     private static final Object[] LOCK = new Object[0]
     private final Map<String, DB> databases = [:]
-  
+
     String[] getDatabaseNames() {
         List<String> databaseNames = new ArrayList().addAll(databases.keySet())
         databaseNames.toArray(new String[databaseNames.size()])
@@ -62,12 +62,12 @@ class LeveldbDatabaseHolder implements LeveldbProvider {
         callable.args = [databaseName, database] as Object[]
         return callable.call()
     }
-    
+
     boolean isDatabaseConnected(String databaseName) {
         if(isBlank(databaseName)) databaseName = 'default'
         retrieveDatabase(databaseName) != null
     }
-    
+
     void disconnectDatabase(String databaseName) {
         if(isBlank(databaseName)) databaseName = 'default'
         storeDatabase(databaseName, null)
@@ -81,7 +81,7 @@ class LeveldbDatabaseHolder implements LeveldbProvider {
             ConfigObject config = LeveldbConnector.instance.createConfig(app)
             database = LeveldbConnector.instance.connect(app, config, databaseName)
         }
-        
+
         if(database == null) {
             throw new IllegalArgumentException("No such leveldb database configuration for name $databaseName")
         }

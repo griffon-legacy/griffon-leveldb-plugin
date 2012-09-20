@@ -36,7 +36,7 @@ class LeveldbGriffonAddon {
         }
     }
 
-    def events = [
+    Map events = [
         ShutdownStart: { app ->
             ConfigObject config = LeveldbConnector.instance.createConfig(app)
             LeveldbConnector.instance.disconnect(app, config)
