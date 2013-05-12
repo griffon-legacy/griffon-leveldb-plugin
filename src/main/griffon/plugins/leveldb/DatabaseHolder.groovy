@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2011-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,69 +20,63 @@ import org.iq80.leveldb.DB
 
 import griffon.core.GriffonApplication
 import griffon.util.ApplicationHolder
-import griffon.util.CallableWithArgs
 import static griffon.util.GriffonNameUtils.isBlank
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * @author Andres Almiray
  */
-@Singleton
-class LeveldbDatabaseHolder implements LeveldbProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(LeveldbDatabaseHolder)
+class DatabaseHolder {
+    private static final String DEFAULT = 'default'
     private static final Object[] LOCK = new Object[0]
     private final Map<String, DB> databases = [:]
+
+    private static final DatabaseHolder INSTANCE
+
+    static {
+        INSTANCE = new DatabaseHolder()
+    }
+
+    static DatabaseHolder getInstance() {
+        INSTANCE
+    }
+
+    private DatabaseHolder() {}
 
     String[] getDatabaseNames() {
         List<String> databaseNames = new ArrayList().addAll(databases.keySet())
         databaseNames.toArray(new String[databaseNames.size()])
     }
 
-    DB getDatabase(String databaseName = 'default') {
-        if(isBlank(databaseName)) databaseName = 'default'
+    DB getDatabase(String databaseName = DEFAULT) {
+        if (isBlank(databaseName)) databaseName = DEFAULT
         retrieveDatabase(databaseName)
     }
 
-    void setDatabase(String databaseName = 'default', DB database) {
-        if(isBlank(databaseName)) databaseName = 'default'
+    void setDatabase(String databaseName = DEFAULT, DB database) {
+        if (isBlank(databaseName)) databaseName = DEFAULT
         storeDatabase(databaseName, database)
     }
 
-    Object withLeveldb(String databaseName = 'default', Closure closure) {
-        DB database = fetchDatabase(databaseName)
-        if(LOG.debugEnabled) LOG.debug("Executing statement on database '$databaseName'")
-        return closure(databaseName, database)
-    }
-
-    public <T> T withLeveldb(String databaseName = 'default', CallableWithArgs<T> callable) {
-        DB database = fetchDatabase(databaseName)
-        if(LOG.debugEnabled) LOG.debug("Executing statement on database '$databaseName'")
-        callable.args = [databaseName, database] as Object[]
-        return callable.call()
-    }
-
     boolean isDatabaseConnected(String databaseName) {
-        if(isBlank(databaseName)) databaseName = 'default'
+        if (isBlank(databaseName)) databaseName = DEFAULT
         retrieveDatabase(databaseName) != null
     }
-
+    
     void disconnectDatabase(String databaseName) {
-        if(isBlank(databaseName)) databaseName = 'default'
+        if (isBlank(databaseName)) databaseName = DEFAULT
         storeDatabase(databaseName, null)
     }
 
-    private DB fetchDatabase(String databaseName) {
-        if(isBlank(databaseName)) databaseName = 'default'
+    DB fetchDatabase(String databaseName) {
+        if (isBlank(databaseName)) databaseName = DEFAULT
         DB database = retrieveDatabase(databaseName)
-        if(database == null) {
+        if (database == null) {
             GriffonApplication app = ApplicationHolder.application
             ConfigObject config = LeveldbConnector.instance.createConfig(app)
             database = LeveldbConnector.instance.connect(app, config, databaseName)
         }
 
-        if(database == null) {
+        if (database == null) {
             throw new IllegalArgumentException("No such leveldb database configuration for name $databaseName")
         }
         database

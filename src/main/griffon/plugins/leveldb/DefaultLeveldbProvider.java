@@ -16,18 +16,26 @@
 
 package griffon.plugins.leveldb;
 
-import griffon.util.CallableWithArgs;
-import groovy.lang.Closure;
+import org.iq80.leveldb.DB;
 
 /**
  * @author Andres Almiray
  */
-public interface LeveldbProvider {
-    <R> R withLeveldb(Closure<R> closure);
+public class DefaultLeveldbProvider extends AbstractLeveldbProvider {
+    private static final DefaultLeveldbProvider INSTANCE;
 
-    <R> R withLeveldb(String databaseName, Closure<R> closure);
+    static {
+        INSTANCE = new DefaultLeveldbProvider();
+    }
 
-    <R> R withLeveldb(CallableWithArgs<R> callable);
+    public static DefaultLeveldbProvider getInstance() {
+        return INSTANCE;
+    }
 
-    <R> R withLeveldb(String databaseName, CallableWithArgs<R> callable);
+    private DefaultLeveldbProvider() {}
+
+    @Override
+    protected DB getDatabase(String databaseName) {
+        return DatabaseHolder.getInstance().fetchDatabase(databaseName);
+    }
 }

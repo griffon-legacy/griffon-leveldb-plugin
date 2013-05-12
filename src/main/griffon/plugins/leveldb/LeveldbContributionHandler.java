@@ -22,7 +22,11 @@ import groovy.lang.Closure;
 /**
  * @author Andres Almiray
  */
-public interface LeveldbProvider {
+public interface LeveldbContributionHandler {
+    void setLeveldbProvider(LeveldbProvider provider);
+
+    LeveldbProvider getLeveldbProvider();
+
     <R> R withLeveldb(Closure<R> closure);
 
     <R> R withLeveldb(String databaseName, Closure<R> closure);

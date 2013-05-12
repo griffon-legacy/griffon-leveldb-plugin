@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,20 +24,21 @@ import org.slf4j.LoggerFactory
  * @author Andres Almiray
  */
 final class LeveldbEnhancer {
+    private static final String DEFAULT = 'default'
     private static final Logger LOG = LoggerFactory.getLogger(LeveldbEnhancer)
 
     private LeveldbEnhancer() {}
-
-    static void enhance(MetaClass mc, LeveldbProvider provider = LeveldbDatabaseHolder.instance) {
-        if(LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
+    
+    static void enhance(MetaClass mc, LeveldbProvider provider = DefaultLeveldbProvider.instance) {
+        if (LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
         mc.withLeveldb = {Closure closure ->
-            provider.withLeveldb('default', closure)
+            provider.withLeveldb(DEFAULT, closure)
         }
         mc.withLeveldb << {String databaseName, Closure closure ->
             provider.withLeveldb(databaseName, closure)
         }
         mc.withLeveldb << {CallableWithArgs callable ->
-            provider.withLeveldb('default', callable)
+            provider.withLeveldb(DEFAULT, callable)
         }
         mc.withLeveldb << {String databaseName, CallableWithArgs callable ->
             provider.withLeveldb(databaseName, callable)
